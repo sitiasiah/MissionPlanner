@@ -82,6 +82,7 @@ namespace MissionPlanner.Utilities
         public Boolean displayParachute { get; set; }
         public Boolean displayEsp { get; set; }
         public Boolean displayAntennaTracker { get; set; }
+        public Boolean displayMyApplication { get; set; }
 
 
         //config tuning
@@ -106,8 +107,6 @@ namespace MissionPlanner.Utilities
         public bool displayFFTSetup { get; set; } = true;
         public bool displayPreFlightTabEdit { get; set; } = true;
         public bool displayPlannerLayout { get; set; } = true;
-
-        public bool lockQuickView { get; set; } = false;
 
         public DisplayView()
         {
@@ -176,6 +175,7 @@ namespace MissionPlanner.Utilities
             displayAntennaTracker = true;
             displayRTKInject = true;
             displayJoystick = true;
+            displayMyApplication = true;
 
 
             //config tuning
@@ -302,7 +302,7 @@ namespace MissionPlanner.Utilities
                 displayAntennaTracker = true,
                 displayRTKInject = true,
                 displayJoystick = true,
-
+                displayMyApplication = true,
 
                  //config tuning
                 displayBasicTuning = true,
@@ -384,6 +384,7 @@ namespace MissionPlanner.Utilities
                 displayAntennaTracker = true,
                 displayRTKInject = true,
                 displayJoystick = true,
+                displayMyApplication = true,
 
 
                 //config tuning
