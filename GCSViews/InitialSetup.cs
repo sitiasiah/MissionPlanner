@@ -294,6 +294,12 @@ namespace MissionPlanner.GCSViews
                 AddBackstageViewPage(typeof(ConfigREPL), "Script REPL", isConnected, adv);
             }
 
+            //asiah
+            if (MainV2.DisplayConfiguration.displayMyApplication)
+            {
+                AddBackstageViewPage(typeof(MyApplication), "My Application"); 
+            }
+
             // remeber last page accessed
             foreach (BackstageViewPage page in backstageView.Pages)
             {
