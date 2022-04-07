@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
+using System.IO;
 
 namespace MissionPlanner
 {
@@ -18,6 +19,10 @@ namespace MissionPlanner
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         [JsonIgnore] [IgnoreDataMember] public static ISpeech Speech;
+
+        // asiah
+        static string CurrentDirectory;
+        static string FileDirectory;
 
         // multipliers
         public static float multiplierdist = 1;
@@ -132,7 +137,9 @@ namespace MissionPlanner
                 _parent = value;
                 if (parent != null)
                     if (parent.parent != null)
+                    {
                         parent.parent.OnPacketReceived += Parent_OnPacketReceived;
+                    }
             }
         }
 
@@ -182,6 +189,10 @@ namespace MissionPlanner
             ratercbackup = 2;
             //Init dictionary for storing names for customfields
             custom_field_names = new Dictionary<string, string>();
+
+            // asiah
+            CurrentDirectory = Directory.GetCurrentDirectory();
+            FileDirectory = CurrentDirectory + "\\MyFile.txt";
         }
 
         ~CurrentState()
@@ -195,7 +206,9 @@ namespace MissionPlanner
             log.Info("CurrentState Dispose");
             if (parent != null)
                 if (parent.parent != null)
+                {
                     parent.parent.OnPacketReceived -= Parent_OnPacketReceived;
+                }
         }
 
         public CurrentState()
@@ -1499,6 +1512,138 @@ namespace MissionPlanner
             }
         }
 
+        // asiah
+        [DisplayText("Engine speed (RPM)")]
+        public float EngineSpeed
+        {
+            get
+            {
+                bool exist = false;
+
+                if (File.Exists(FileDirectory) == true)
+                    exist = true;
+                else
+                {
+                    using (FileStream fs = File.Create(FileDirectory))
+                    {
+                        // Add some text to file    
+                        Byte[] title = new UTF8Encoding(true).GetBytes("0,0,0,0,0,false");
+                        fs.Write(title, 0, title.Length);
+                    }
+                    exist = false;
+                }
+
+                string allText = System.IO.File.ReadAllText(FileDirectory);
+                string[] words = allText.Split(',');
+                float fVar = 0;
+
+                if (words.ElementAt(1) != "")
+                    fVar = float.Parse(words[0]);
+                else
+                    fVar = 0;
+                return fVar;
+            }
+        }
+
+        // asiah
+        [DisplayText("Throttle position")]
+        public float ThrottlePosition
+        {
+            get
+            {
+                bool exist = false;
+
+                if (File.Exists(FileDirectory) == true)
+                    exist = true;
+                else
+                {
+                    using (FileStream fs = File.Create(FileDirectory))
+                    {
+                        // Add some text to file    
+                        Byte[] title = new UTF8Encoding(true).GetBytes("0,0,0,0,0,false");
+                        fs.Write(title, 0, title.Length);
+                    }
+                    exist = false;
+                }
+
+                string allText = System.IO.File.ReadAllText(FileDirectory);
+                string[] words = allText.Split(',');
+                float fVar = 0;
+
+                if (words.ElementAt(1) != "")
+                    fVar = float.Parse(words[1]);
+                else
+                    fVar = 0;
+                return fVar;
+            }
+        }
+
+        // asiah
+        [DisplayText("Engine temperature")]
+        public float EngineTemperature
+        {
+            get
+            {
+                bool exist = false;
+
+                if (File.Exists(FileDirectory) == true)
+                    exist = true;
+                else
+                {
+                    using (FileStream fs = File.Create(FileDirectory))
+                    {
+                        // Add some text to file    
+                        Byte[] title = new UTF8Encoding(true).GetBytes("0,0,0,0,0,false");
+                        fs.Write(title, 0, title.Length);
+                    }
+                    exist = false;
+                }
+
+                string allText = System.IO.File.ReadAllText(FileDirectory);
+                string[] words = allText.Split(',');
+                float fVar = 0;
+
+                if (words.ElementAt(1) != "")
+                    fVar = float.Parse(words[2]);
+                else
+                    fVar = 0;
+                return fVar;
+            }
+        }
+
+        // asiah
+        [DisplayText("Battery voltage")]
+        public float BatteryVoltage
+        {
+            get
+            {
+                bool exist = false;
+
+                if (File.Exists(FileDirectory) == true)
+                    exist = true;
+                else
+                {
+                    using (FileStream fs = File.Create(FileDirectory))
+                    {
+                        // Add some text to file    
+                        Byte[] title = new UTF8Encoding(true).GetBytes("0,0,0,0,0,false");
+                        fs.Write(title, 0, title.Length);
+                    }
+                    exist = false;
+                }
+
+                string allText = System.IO.File.ReadAllText(FileDirectory);
+                string[] words = allText.Split(',');
+                float fVar = 0;
+
+                if (words.ElementAt(1) != "")
+                    fVar = float.Parse(words[3]);
+                else
+                    fVar = 0;
+                return fVar;
+            }
+        }
+
         [DisplayText("Bearing to Mav (deg)")]
         public float AZToMAV
         {
@@ -1526,10 +1671,10 @@ namespace MissionPlanner
             }
         }
 
-        [DisplayText("Sonar Range (alt)")]
+        [DisplayText("Sonar Range (meters)")]
         public float sonarrange
         {
-            get => (float)toAltDisplayUnit(_sonarrange);
+            get => (float)toDistDisplayUnit(_sonarrange);
             set => _sonarrange = value;
         }
 
@@ -1908,11 +2053,12 @@ namespace MissionPlanner
         }
 
         private void Parent_OnPacketReceived(object sender, MAVLink.MAVLinkMessage mavLinkMessage)
-        {
+        { 
+
             if (mavLinkMessage.sysid == parent.sysid && mavLinkMessage.compid == parent.compid
                 || mavLinkMessage.msgid == (uint)MAVLink.MAVLINK_MSG_ID.RADIO // propagate the RADIO/RADIO_STATUS message across all devices on this link
                 || mavLinkMessage.msgid == (uint)MAVLink.MAVLINK_MSG_ID.RADIO_STATUS)
-            {
+            { 
                 switch (mavLinkMessage.msgid)
                 {
                     case (uint)MAVLink.MAVLINK_MSG_ID.RC_CHANNELS_SCALED:
@@ -3061,7 +3207,6 @@ namespace MissionPlanner
                         break;
                     case (uint)MAVLink.MAVLINK_MSG_ID.RPM:
 
-
                         {
                             var rpm = mavLinkMessage.ToStructure<MAVLink.mavlink_rpm_t>();
 
@@ -3518,11 +3663,6 @@ namespace MissionPlanner
         public static double toDistDisplayUnit(double input)
         {
             return input * multiplierdist;
-        }
-
-        public static double toAltDisplayUnit(double input)
-        {
-            return input * multiplieralt;
         }
 
         public static double toSpeedDisplayUnit(double input)
