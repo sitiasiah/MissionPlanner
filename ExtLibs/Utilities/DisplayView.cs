@@ -108,6 +108,8 @@ namespace MissionPlanner.Utilities
         public bool displayPreFlightTabEdit { get; set; } = true;
         public bool displayPlannerLayout { get; set; } = true;
 
+        public bool lockQuickView { get; set; } = false;
+
         public DisplayView()
         {
             // default to basic.
